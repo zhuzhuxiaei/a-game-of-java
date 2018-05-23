@@ -1,0 +1,16 @@
+package units;
+public class Node{
+	Node nextnode=null;
+	int num=-1;
+	public Node(int x) {
+		this.num=x;
+	}
+	public Node() {
+	}
+	public void setNum(int x) {
+		this.num=x;
+	}
+	public int getNum() {
+		return this.num;
+	}
+}
