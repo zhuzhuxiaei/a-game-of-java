@@ -1,0 +1,36 @@
+package units;
+
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
+import veriable.StaticNum;
+
+public class Father_Of_ZiDan extends Father_Of_Units{
+	int damage=0;//额外的
+	int sleep=0;//
+	public int getDamage() {
+		return damage;
+	}
+	public void setDamage(int damage) {
+		this.damage=damage;
+	}
+	public Father_Of_ZiDan(
+			int x,
+			int y,
+			int x_of_size,
+			int y_of_size,
+			int speed,
+			int health,
+			int direction,
+			int damage) {
+		super(x,y,x_of_size,y_of_size,speed,health,direction);
+		this.damage=damage;
+	}
+	public int zidanAction() {
+		return 0;
+	}
+	public int attackTank(int k,int i,int j,int direction) {
+		return 0;
+	}
+}
