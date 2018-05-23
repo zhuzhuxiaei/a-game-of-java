@@ -1,0 +1,70 @@
+package units;
+import java.awt.Image;
+import java.io.IOException;
+import java.util.Vector;
+
+import javax.imageio.ImageIO;
+
+import veriable.StaticNum;
+/*	int x_of_size=0;
+	int y_of_size=0;
+	int speed=0;
+	int health=99999999;
+	Image img=null;
+	int x=0;
+	int y=0;
+	int direction=0;
+	int attackauto=1;*/
+public class Fire_Tank extends Father_Of_Tank {
+//因为vector操作过多，为了不让程序过长，设为public
+//	public int test=1;
+	int zidansleep=0;
+	public Fire_Tank(int x,
+			int y,
+			int direction
+			){
+		super(x,y,StaticNum.SIZE,StaticNum.SIZE,0,StaticNum.FIRE_TANK_HEALTH,direction);
+		ve1=new Vector();
+		try {
+			if(this.direction==StaticNum.LEFT) {
+				this.img=ImageIO.read(ClassLoader.getSystemResourceAsStream("images/firetankleft.jpg"));
+			}else
+			if(this.direction==StaticNum.RIGHT) {
+				this.setIsenemy();
+				this.img=ImageIO.read(ClassLoader.getSystemResourceAsStream("images/firetankright.jpg"));
+			}else {
+				System.out.println("传参错误");
+			}
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		this.shotsleep=149;
+	
+	}
+	public int generateZiDan() {
+		if(this.shotsleep<150) {
+			shotsleep++;
+		}else {
+			shotsleep=0;
+			Fire_Tank_ZiDan firetankzidan=new Fire_Tank_ZiDan(this.x,this.y,this.direction);
+			this.ve1.add(firetankzidan);
+		}
+		return 0;
+	}
+	public int dealZiDan() {
+		if(this.zidansleep<20) {
+			zidansleep++;
+		}
+		else {
+			zidansleep=0;
+			for(int i=0;i<ve1.size();i++) {
+				if(((Father_Of_ZiDan) this.ve1.get(i)).zidanAction()==5) {
+					this.ve1.remove(i);
+				}
+			}
+		}
+		return 0;
+	}
+
+}
