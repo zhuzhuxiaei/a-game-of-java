@@ -1,0 +1,111 @@
+package window;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+/*
+ * 灵活的界面，简介易于操作
+ * author=liu
+ */
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import veriable.StaticNum;
+public class Main_Window extends JFrame implements MouseListener{
+	Fight_Panel fight_panel=null;//fight_panel要单独写一个类，但是这里先这样
+//	JPanel console_panel=null;//同上
+	Console_Panel console_panel=null;
+	Command_Panel command_panel=null;
+	GridBagLayout gbl=null;
+	GridBagConstraints c=null;
+	public Main_Window() throws IOException {
+		super();
+		gbl=new GridBagLayout();
+		c=new GridBagConstraints();
+		this.setLayout(gbl);
+		c.fill=GridBagConstraints.BOTH;
+		c.weightx=1;
+		c.weighty=1;
+		c.gridwidth=GridBagConstraints.REMAINDER;//我还要做个测试在这里
+		console_panel=new Console_Panel(450,450);
+		console_panel.setBackground(Color.RED);
+		addPanel(console_panel,gbl,c);
+		c.weightx=1;
+		c.weighty=8;
+		fight_panel=new Fight_Panel();
+		addPanel(fight_panel,gbl,c);
+		c.weightx=1;
+		c.weighty=1;
+		command_panel=new Command_Panel();
+//		command_panel.setBackground(Color.black);
+		addPanel(command_panel,gbl,c);
+		this.fight_panel.setCommand_Panel(command_panel);
+		this.addKeyListener(fight_panel);//这个可以搭配ctrl键完成连点操作。
+		this.addMouseListener(this);
+//		this.addMouseListener(command_panel);
+//		this.addMouseListener(fight_panel);
+		initialize();	
+		Thread t1=new Thread(fight_panel);
+		t1.start();
+	}
+	private int initialize() {
+		this.setSize(1048, 720);
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setBackground(Color.BLUE);
+		this.setLocation(100, 100);
+		this.setVisible(true);
+		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		return 0;
+	}
+	public void addPanel(JPanel jp,
+            GridBagLayout gridbag,
+            GridBagConstraints c) {
+		gridbag.setConstraints(jp, c);
+		this.add(jp);
+		
+	}
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		try {
+			Main_Window MW=new Main_Window();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+
+	}
+	@Override
+	public void mouseClicked(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void mouseEntered(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void mouseExited(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void mousePressed(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void mouseReleased(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+}
+
