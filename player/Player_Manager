@@ -1,0 +1,38 @@
+package player;
+
+import java.awt.Graphics;
+
+import units.Fire_Tank;
+import units.Small_Tank;
+import veriable.StaticNum;
+
+//掌管各类资源，以及能否生产
+public class Player_Manager implements Runnable{//决定用户是否能进行操作，并将操作反馈到面板
+	int money=0;
+	int gas=0;
+	public Player_Manager(int money,int gas) {//默认450矿，450气
+		this.money=money;
+		this.gas=gas;
+	}
+	public boolean isenoughMoney(int tanktype) {
+		switch(tanktype) {
+		case 0: 
+			if(this.gas>=StaticNum.GAS_OF_SMALLTANK&&this.money>=StaticNum.MONEY_OF_SMALLTANK) {
+				return true;
+			}else return false;
+		case 1:
+			if(this.gas>=StaticNum.GAS_OF_FIRETAN&&this.money>=StaticNum.MONEY_OF_FIRETANK) {
+				return true;
+			}else return false;
+		default:
+			return false;
+		}
+	}
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	
+}
