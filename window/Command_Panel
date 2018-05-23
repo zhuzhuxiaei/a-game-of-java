@@ -1,0 +1,82 @@
+package window;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.IOException;
+import javax.imageio.ImageIO;
+import javax.swing.JPanel;
+import veriable.StaticNum;
+public class Command_Panel extends JPanel implements MouseListener
+{
+	JPanel jp=null;
+	int tanktype=0;
+	public Command_Panel() {
+		super();
+		jp=new JPanel();				
+		this.jp.setBackground(Color.black);
+		this.setLayout(new BorderLayout());
+		this.add(jp);
+		this.addMouseListener(this);
+	}
+	public void paint(Graphics g) {
+		super.paint(g);//不加这句话，将会将原有画面抹去重绘。
+		Image smalltankimg;
+		Image firetankimg;
+		try {
+			g.setColor(Color.black);
+			smalltankimg = ImageIO.read(ClassLoader.getSystemResourceAsStream("images/smalltankleft.jpg"));
+			firetankimg=ImageIO.read(ClassLoader.getSystemResourceAsStream("images/firetankleft.jpg"));
+			
+			g.drawImage(smalltankimg, StaticNum.iconPlace[0][0], StaticNum.iconPlace[0][1],
+						StaticNum.SIZE, StaticNum.SIZE, this);
+			g.drawImage(firetankimg, StaticNum.iconPlace[1][0], StaticNum.iconPlace[0][1], 
+					StaticNum.SIZE, StaticNum.SIZE, this);
+//			g.drawImage(smalltankimg, StaticNum.iconPlace[][], 10,StaticNum.size, StaticNum.size, this);
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	@Override
+	public void mouseClicked(MouseEvent arg0) {
+		System.out.println(arg0.getX()+"       "+arg0.getY());
+		for(int i=0;i<4;i++) {
+			if(inArea(arg0.getX(),arg0.getY(),StaticNum.iconPlace[i][0],StaticNum.iconPlace[i][1],40)) {
+				this.tanktype=i;
+				System.out.println(this.tanktype);
+				break;
+			}
+		}
+		// TODO Auto-generated method stub
+	}
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void mouseReleased(MouseEvent e) {
+
+		// TODO Auto-generated method stub
+	}
+	public boolean inArea(int x,int y,int px,int py,int size) {
+		if(x<px+size&&x>px&&y>py&&y<py+size) {
+			return true;
+		}
+		else return false;
+	}
+}
