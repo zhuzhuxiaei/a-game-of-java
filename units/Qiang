@@ -1,0 +1,8 @@
+package units;
+
+public class Qiang {
+	public Node[] node=null;
+	public Qiang() {
+		this.node=new Node[13];
+	}
+}
