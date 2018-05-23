@@ -1,0 +1,64 @@
+package units;
+import java.awt.Image;
+import java.io.IOException;
+import java.util.Vector;
+
+import javax.imageio.ImageIO;
+
+import veriable.StaticNum;
+/*	int x_of_size=0;
+	int y_of_size=0;
+	int speed=0;
+	int health=99999999;
+	Image img=null;
+	int x=0;
+	int y=0;
+	int direction=0;
+	int attackauto=1;*/
+public class Small_Tank extends Father_Of_Tank {
+//因为vector操作过多，为了不让程序过长，设为public
+//	public int test=1;
+	public Small_Tank(int x,
+			int y,
+			int direction
+			){
+		super(x,y,StaticNum.SIZE,StaticNum.SIZE,0,StaticNum.SMALL_TANK_HEALTH,direction);
+		ve1=new Vector();
+		try {
+			if(this.direction==StaticNum.LEFT) {
+				this.img=ImageIO.read(ClassLoader.getSystemResourceAsStream("images/smalltankleft.jpg"));
+			}else
+			if(this.direction==StaticNum.RIGHT) {
+				this.setIsenemy();
+				this.img=ImageIO.read(ClassLoader.getSystemResourceAsStream("images/smalltankright.jpg"));
+			}else {
+				System.out.println("传参错误");
+			}
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		this.shotsleep=149;
+	
+	}
+	public int generateZiDan() {//这里要用到多态，因为决定不在每个作战单位设立线程，而是统一管理在一个叫做作战单位线程中
+		//所以，这里就要把父类方法重写
+		if(shotsleep<150) {
+			shotsleep++;
+		}
+		else{
+			shotsleep=0;
+			Small_Tank_ZiDan zidan1=new Small_Tank_ZiDan(this.x,this.y,this.direction);
+			this.ve1.add(zidan1);
+		}
+		return 0;
+	}
+	public int dealZiDan() {
+		for(int i=0;i<ve1.size();i++) {
+			((Father_Of_ZiDan) this.ve1.get(i)).zidanAction();
+//			System.out.println(test);
+		}
+		return 0;
+	}
+
+}
