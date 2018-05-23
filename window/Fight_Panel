@@ -1,0 +1,194 @@
+package window;
+/*
+repaint调用update方法
+另外，update主要由子弹引起，所以，在这里update方法需要修改
+如果是以往的方法，每个子弹有改变都调用重绘方法，则开销太大
+所以，我们这里采用的是一个线程，每隔一段时间调用update方法，对于
+需要改变的单位进行重绘*/
+import units.*;
+import veriable.StaticNum;//每边各十七个
+import javax.imageio.ImageIO;
+import javax.swing.JPanel;
+import ground.Units_Of_Brick;
+import java.awt.AlphaComposite;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+//import thumbnailator.*;
+//import thumbnailator.name.builders.*;
+public class Fight_Panel extends JPanel implements 
+MouseListener,
+KeyListener,
+Runnable
+//ActionListener
+{
+	JPanel enemy_panel=null;
+	JPanel my_panel=null;
+	Units_Manager um=null;
+	Units_Of_Brick uob=null;
+	Command_Panel cp=null;
+	Tank_Factory tf=null;
+	/*test*/
+
+	/*test*/
+	public void setCommand_Panel(Command_Panel cp) {
+		this.cp=cp;
+	}
+	public Fight_Panel() throws IOException {
+		super();
+		/*test*/
+		/*test*/
+		um=new Units_Manager();
+		enemy_panel=new JPanel();
+		my_panel=new JPanel();
+		enemy_panel.setBackground(Color.gray);
+		my_panel.setBackground(Color.DARK_GRAY);
+		uob=new Units_Of_Brick();
+		tf=new Tank_Factory();
+		this.addMouseListener(this);
+		this.setLayout(new GridLayout(1,2));
+		this.add(enemy_panel);
+		this.add(my_panel);
+		Thread t1=new Thread(um);
+		t1.start();
+	}
+	///////////////////////////////////////////////////////////////////////////////////////////////////
+	public void paint(Graphics g1) {
+		Graphics2D g=(Graphics2D)g1;
+		super.paint(g);
+		//painttank
+		for(int i=0;i<StaticNum.NUMOFALL;i++) {
+			if(um.location[i]!=-1) { 
+				painTank(g,um.falist[i]);
+			}
+		}
+//		//paintzidan
+		for(int i=0;i<StaticNum.NUMOFALL;i++) {
+			if(um.location[i]!=-1&&um.location[i]!=1) {
+				for(int j=0;j<um.falist[i].ve1.size();j++) {
+					paintZiDan(g,(Father_Of_ZiDan) um.falist[i].ve1.get(j),um.location[i]);
+				}
+			}
+		}	
+		//单独画透明的子弹
+		for(int i=0;i<StaticNum.NUMOFALL;i++) {
+			if(um.location[i]!=-1&&um.location[i]==1) {
+				for(int j=0;j<um.falist[i].ve1.size();j++) {
+					paintZiDan(g,(Father_Of_ZiDan) um.falist[i].ve1.get(j),um.location[i]);
+				}
+			}
+		}
+	}
+	public void painTank(Graphics2D g,
+			Father_Of_Tank fa) {
+		g.drawImage( fa.getImg(),fa.getX(),fa.getY(),fa.getX_of_size(), fa.getY_of_size(), this);
+		
+	}
+	public void paintZiDan(Graphics2D g,
+			Father_Of_ZiDan fa,int tanktype) {
+		if(tanktype!=1) {
+			g.drawImage(fa.getImg(),fa.getX(),fa.getY(),fa.getX_of_size(),fa.getY_of_size(),this);
+		}
+		else {
+		        BufferedImage waterImg = (BufferedImage) fa.getImg(); 
+		        // 创建Graphics2D对象，用在底图对象上绘图  
+		        int waterImgWidth = waterImg.getWidth();// 获取层图的宽度  
+		        int waterImgHeight = waterImg.getHeight();// 获取层图的高度  
+		        // 在图形和图像中实现混合和透明效果  
+		        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.2f));  
+		        // 绘制                                           位置            大小
+		        g.drawImage(fa.getImg(), fa.getX()-40,fa.getY()-40, 120, 120, this);  //waterimg ,offset of x,offset of y,sizex,sizey.
+//		        g.dispose();// 释放图形上下文使用的系统资源  
+		         
+		   
+		}
+	}
+	 public void run()//重载run()函数  
+     {
+		 while(true) {
+			 try {
+				Thread.sleep(17);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			 this.repaint();
+			 um.zidanManager();
+//			 um.attackManager();
+		 }
+     }
+	//////////////////////////////////////////////////////////////////////////////////////////////////////
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		if(e.getX()<682) {
+			uob.setx(e.getX());
+			uob.sety(e.getY());
+			Father_Of_Tank fa=tf.generateTank(uob.getX()-20,uob.getY()-20,StaticNum.RIGHT,cp.tanktype);
+			int location=uob.getx()+uob.gety()*StaticNum.NUMOFGROUNDX*2;
+			System.out.println("location   "+location);
+			um.change_units(location,fa,this.cp.tanktype);
+			Units_Manager.makeQiang(1, uob.getx(), uob.gety(),StaticNum.LEFT);
+			repaint();
+		}else
+		if(e.getX()>1359) {
+			
+		}
+		else{
+			uob.setx(e.getX());
+			uob.sety(e.getY());
+//			Father_Of_Tank fa=new Small_Tank(uob.getX()-20,uob.getY()-20,StaticNum.left);
+			Father_Of_Tank fa=tf.generateTank(uob.getX()-20,uob.getY()-20,StaticNum.LEFT,cp.tanktype);
+			int location=uob.getx()+uob.gety()*StaticNum.NUMOFGROUNDX*2;
+			System.out.println("location   "+location);
+			um.change_units(location,fa,this.cp.tanktype);
+			Units_Manager.makeQiang(1, uob.getx(), uob.gety(),StaticNum.RIGHT);
+			repaint();
+		}
+	}
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+/////////////////////	/////////////////////////////////////////////////////////////////////////
+	@Override
+	public void keyPressed(KeyEvent arg0) {
+		
+	}
+	@Override
+	public void keyReleased(KeyEvent arg0) {
+		// TODO Auto-generated method stub
+
+		
+	}
+	@Override
+	public void keyTyped(KeyEvent arg0) {
+		// TODO Auto-generated method stu
+	} 
+}
