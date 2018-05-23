@@ -1,0 +1,92 @@
+package units;
+/*int x_of_size=0;
+	int y_of_size=0;
+	int speed=0;
+	int health=99999999;
+	Image img=null;
+	int x=0;
+	int y=0;
+	int direction=0;
+	int attackauto=1;
+	}*/
+import java.awt.Graphics;
+import java.awt.Image;
+import java.io.IOException;
+import javax.imageio.ImageIO;
+import veriable.StaticNum;
+//father of units 的成员变量
+//这个类只需要重写action方法即可
+public class Small_Tank_ZiDan extends Father_Of_ZiDan {
+	public Small_Tank_ZiDan(int x,int y,int zidandirection) {                     //移速，生命
+		super(x+5,y+13,StaticNum.SMALL_TANK_ZIDANSIZEX,StaticNum.SMALL_TANK_ZIDANSIZEY,3,1,zidandirection,5);
+//		if(this.direction==StaticNum.left) {
+//			speed=-speed;
+//		}else {
+//			//wuyu
+//		}//gongjili
+		try {
+			if(this.direction==StaticNum.LEFT) {
+				speed=-speed;
+				this.img=ImageIO.read(ClassLoader.getSystemResourceAsStream("images/smallzidanleft.jpg"));
+			}else
+			if(this.direction==StaticNum.RIGHT) {
+				this.setIsenemy();
+				this.img=ImageIO.read(ClassLoader.getSystemResourceAsStream("images/smallzidanright.jpg"));
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public int zidanAction() {//子弹action的作用是切换下一张图片，
+		//这里，只需要把下一张图片的坐标改一下即可,即修改x。
+		if(this.sleep<1) {
+			this.sleep++;
+		}else {
+			this.sleep=0;
+			this.x+=speed;
+		}
+		return 0;
+	}	
+	public int attackTank(int k,int i,int j,int direction) {
+		if(direction==StaticNum.LEFT) {//打左墙
+			int hang=(this.y-14)/40;//获得子弹所在地板块
+			int lie=this.x/40;
+			int zuobiao;//地板块坐标
+			if(Units_Manager.qiangleft.node[hang]!=null) {
+				if(lie==Units_Manager.qiangleft.node[hang].num) {//该行的块坐标与墙在该行的首个块坐标一致，则进入
+					zuobiao=hang*StaticNum.NUMOFGROUNDX*2+lie;
+					Units_Manager.falist[zuobiao].health-=((Father_Of_ZiDan)Units_Manager.
+							falist[i*StaticNum.NUMOFGROUNDX*2+j].ve1.get(k)).damage;//对该块造成伤害
+					Units_Manager.falist[i*StaticNum.NUMOFGROUNDX*2+j].ve1.remove(k);//移除子弹
+					if(Units_Manager.falist[zuobiao].health<=0) {//查看该块上的地方单位是否死亡
+						Units_Manager.location[zuobiao]=-1;//location标志置位
+						Units_Manager.falist[zuobiao]=null;//单位清除
+						Units_Manager.makeQiang(2,lie,hang,StaticNum.LEFT);//重建墙
+					}
+				}
+			}
+		}
+		else {//打右墙
+			int x=this.x;//获得子弹坐标
+			int y=this.y;
+			int hang=(y-14)/40;//获得子弹所在地板块
+			int lie=x/40;
+			int zuobiao;//地板块坐标
+			if(Units_Manager.qiangright.node[hang]!=null) {
+				if(lie==Units_Manager.qiangright.node[hang].num) {//该行的块坐标与墙在该行的首个块坐标一致，则进入
+					zuobiao=hang*StaticNum.NUMOFGROUNDX*2+lie;
+					Units_Manager.falist[zuobiao].health-=((Father_Of_ZiDan)Units_Manager.
+							falist[i*StaticNum.NUMOFGROUNDX*2+j].ve1.get(k)).damage;//对该块造成伤害
+					Units_Manager.falist[i*StaticNum.NUMOFGROUNDX*2+j].ve1.remove(k);//移除子弹
+					if(Units_Manager.falist[zuobiao].health<=0) {//查看该块上的地方单位是否死亡
+						Units_Manager.location[zuobiao]=-1;//location标志清0
+						Units_Manager.falist[zuobiao]=null;//单位清除
+						Units_Manager.makeQiang(2,lie,hang,StaticNum.RIGHT);//重建墙
+					}
+				}
+			}
+		}
+		return 0;
+	}
+}
