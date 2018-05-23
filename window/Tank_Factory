@@ -1,0 +1,24 @@
+package window;
+
+import units.Father_Of_Tank;
+import units.Fire_Tank;
+import units.Small_Tank;
+public class Tank_Factory {
+
+	public Tank_Factory() {
+		
+	}	
+	public Father_Of_Tank generateTank(int locationx,int locationy,int direction,int tanktype) {
+		Father_Of_Tank fa=null;
+		switch(tanktype) {
+		case 0: 
+			fa=new Small_Tank(locationx,locationy,direction);
+			break;
+		case 1:
+			fa=new Fire_Tank(locationx,locationy,direction);
+			break;
+		}
+		System.out.println("tankfactory");
+		return fa;
+	}
+}
