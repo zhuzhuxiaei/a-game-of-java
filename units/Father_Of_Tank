@@ -1,0 +1,36 @@
+package units;
+
+import java.util.Vector;
+
+public class Father_Of_Tank extends Father_Of_Units {
+	public Vector ve1=null;
+	int shotsleep=0;
+	int attackAuto=1;
+	public Father_Of_Tank(//使用父类的无图像构造方法
+			int x,
+			int y,
+			int x_of_size,
+			int y_of_size,
+			int speed,
+			int health,
+			int direction) {
+		super(x,y,x_of_size,y_of_size,speed,health,direction);
+	}
+	public int getAttackAuto() {
+		return attackAuto;
+	}
+	public void setAttackAuto(int attackauto) {
+		this.attackAuto=attackauto;
+	}
+	public int generateZiDan() {//这里要用到多态，因为决定不在每个作战单位设立线程，而是统一管理在一个叫做作战单位线程中
+		//所以，这里就要把父类方法重写
+		return 0;
+	}
+	public int dealZiDan() {
+		
+		return 0;
+	}
+//	public int tankAttack() {
+//		return 0;
+//	}
+}
