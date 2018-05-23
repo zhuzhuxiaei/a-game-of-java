@@ -1,0 +1,71 @@
+package units;
+
+import java.awt.AlphaComposite;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
+import veriable.StaticNum;
+
+public class Fire_Tank_ZiDan extends Father_Of_ZiDan{
+	Image image[]=new Image[3];
+	int count=0;
+	public Fire_Tank_ZiDan(int x,int y,int zidandirection) {
+		//移速，生命，方向，攻击
+		super(x,y,StaticNum.FIRE_TANK_ZIDANSIZEX,StaticNum.FIRE_TANK_ZIDANSIZEY,3,1,zidandirection,8);
+		try {
+			image[0]=ImageIO.read(ClassLoader.getSystemResourceAsStream("images/firezidan1.jpg"));
+			image[1]=ImageIO.read(ClassLoader.getSystemResourceAsStream("images/firezidan2.jpg"));
+			image[2]=ImageIO.read(ClassLoader.getSystemResourceAsStream("images/firezidan3.jpg"));
+			if(this.direction==StaticNum.LEFT) {
+				this.img=image[0];
+			}else
+			if(this.direction==StaticNum.RIGHT) {
+				this.setIsenemy();
+				this.img=image[0];
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public int zidanAction() {//子弹action的作用是切换下一张图片，
+		this.img=image[count%3];
+		count++;
+		return count;
+	}	
+	/*attackTank
+	 *每一帧计算一次，每二十帧切换一次图片，整个过程是150帧，共五张图片，
+	 *属于攻击时间的图片是两张，每张攻击二十次，共四十次，也就是说，一整个过程可以攻击四十次*/
+	public int attackTank(int k,int x,int y,int direction) {
+		//获得子弹的location
+		if(this.count%3==0) {//一组图伤害两次
+			int hang=(this.y-14)/40;//获得子弹所在地板块
+			int lie=this.x/40;
+			for(int i=hang-1;i<=hang+1;i+=2) {
+				for(int j=lie-1;j<=lie+1;j++) {
+					if(Units_Manager.location[i*StaticNum.NUMOFGROUNDX*2+j]!=-1) {
+						Units_Manager.falist[i*StaticNum.NUMOFGROUNDX*2+j].health-=this.damage;
+						if(Units_Manager.falist[i*StaticNum.NUMOFGROUNDX*2+j].health<=0) {
+							Units_Manager.falist[i*StaticNum.NUMOFGROUNDX*2+j]=null;
+							Units_Manager.location[i*StaticNum.NUMOFGROUNDX*2+j]=-1;
+						}
+					}
+				}
+			}
+			for(int j=lie-1;j<=lie+1;j+=2) {
+				if(Units_Manager.location[hang*StaticNum.NUMOFGROUNDX*2+j]!=-1) {
+					Units_Manager.falist[hang*StaticNum.NUMOFGROUNDX*2+j].health-=this.damage;
+					if(Units_Manager.falist[hang*StaticNum.NUMOFGROUNDX*2+j].health<=0) {
+						Units_Manager.falist[hang*StaticNum.NUMOFGROUNDX*2+j]=null;
+						Units_Manager.location[hang*StaticNum.NUMOFGROUNDX*2+j]=-1;
+					}
+				}
+			}
+		}
+		return 0;
+	}
+}
