@@ -1,0 +1,252 @@
+package units;
+import veriable.StaticNum;//units_manage只是从逻辑上管理所有成员
+public class Units_Manager 
+implements Runnable
+{
+	public static int location[]=new int[StaticNum.NUMOFALL];//用不用static都可以，因为只有一个manager
+	public static Father_Of_Tank falist[]=new Father_Of_Tank[StaticNum.NUMOFALL];
+	public static Qiang qiangleft=null;
+	public static Qiang qiangright=null;
+	public Units_Manager() {
+		super();
+		for(short i=0;i<StaticNum.NUMOFALL;i++) {
+			location[i]=-1;
+		}
+		qiangleft=new Qiang();
+		qiangright=new Qiang();
+	}
+	//////////////////////////////////////////////////////////////////////
+	public int change_units(int location,Father_Of_Tank fa,int tanktype) {
+		falist[location]=fa;
+		System.out.println("change_units");
+		this.location[location]=tanktype;
+		return 0;
+	}
+	//////////////////////////////////////////////////////////////////////
+	public int zidanManager() {
+		for(int i=0;i<StaticNum.NUMOFALL;i++) {
+			if(location[i]!=-1) {//该坦克还存在则进入
+				falist[i].dealZiDan();//子弹动作逻辑
+				falist[i].generateZiDan();//子弹产生逻辑
+			}
+		}
+		return 0;
+	}
+	/*调用每一个tank，然后用该tank调用每一个子弹的attackTank*/
+	public void attackManager() {
+		int m=StaticNum.NUMOFGROUNDX;//17
+		for(int i=0;i<StaticNum.NUMOFGROUNDY;i++) {//按顺序遍历所有场上存在的坦克，然后遍历所有子弹。
+			for(int j=StaticNum.NUMOFGROUNDX;j<StaticNum.NUMOFGROUNDX*2;j++) {//右边的坦克，朝左
+				if(this.location[i*StaticNum.NUMOFGROUNDX*2+j]!=-1) {
+					for(int k=0;k<falist[i*StaticNum.NUMOFGROUNDX*2+j].ve1.size();k++) {
+						int tempnum=((Father_Of_ZiDan)falist[i*StaticNum.NUMOFGROUNDX*2+j].ve1.get(k)).x;
+						if(tempnum>StaticNum.X||tempnum<0) {
+							falist[i*StaticNum.NUMOFGROUNDX*2+j].ve1.remove(k);
+						}else {
+							((Father_Of_ZiDan)falist[i*StaticNum.NUMOFGROUNDX*2+j].ve1.get(k))
+							.attackTank(k,i,j,StaticNum.LEFT);//i和j是坐标，k是第几颗子弹
+						}
+					}
+				}
+				if(this.location[i*StaticNum.NUMOFGROUNDX*2+j-m]!=-1) {//左边的坦克，朝右
+					for(int k=0;k<falist[i*StaticNum.NUMOFGROUNDX*2+j-m].ve1.size();k++) {
+						int tempnum=((Father_Of_ZiDan)falist[i*StaticNum.NUMOFGROUNDX*2+j-m].ve1.get(k)).x;
+						if(tempnum>StaticNum.X||tempnum<0) {//超出边界，移除
+							falist[i*StaticNum.NUMOFGROUNDX*2+j-m].ve1.remove(k);
+						}else {
+							((Father_Of_ZiDan)falist[i*StaticNum.NUMOFGROUNDX*2+j-m].ve1.get(k))
+							.attackTank(k,i,j-m,StaticNum.RIGHT);
+						}
+					}
+				}
+			}
+		}
+	}
+	{
+//	public void attackTank(int k,int i,int j,int direction) {
+//		if(direction==StaticNum.LEFT) {//打左墙
+//			int x=((Father_Of_ZiDan)falist[i*StaticNum.NUMOFGROUNDX*2+j].ve1.get(k)).x;//获得子弹坐标
+//			int y=((Father_Of_ZiDan)falist[i*StaticNum.NUMOFGROUNDX*2+j].ve1.get(k)).y;
+//			int hang=(y-14)/40;//获得子弹所在地板块
+//			int lie=x/40;
+//			int zuobiao;//地板块坐标
+//			if(this.qiangleft.node[hang]!=null) {
+//				if(lie==this.qiangleft.node[hang].num) {//该行的块坐标与墙在该行的首个块坐标一致，则进入
+//					zuobiao=hang*StaticNum.NUMOFGROUNDX*2+lie;
+//					falist[zuobiao].health-=((Father_Of_ZiDan)falist[i*StaticNum.NUMOFGROUNDX*2+j].ve1.get(k)).damage;//对该块造成伤害
+//					falist[i*StaticNum.NUMOFGROUNDX*2+j].ve1.remove(k);//移除子弹
+//					if(falist[zuobiao].health<=0) {//查看该块上的地方单位是否死亡
+//						this.location[zuobiao]=0;//location标志清0
+//						falist[zuobiao]=null;//单位清除
+//						makeQiang(2,lie,hang,StaticNum.LEFT);//重建墙
+//					}
+//				}
+//			}
+//		}
+//		else {
+//			int x=((Father_Of_ZiDan)falist[i*StaticNum.NUMOFGROUNDX*2+j].ve1.get(k)).x;//获得子弹坐标
+//			int y=((Father_Of_ZiDan)falist[i*StaticNum.NUMOFGROUNDX*2+j].ve1.get(k)).y;
+//			int hang=(y-14)/40;//获得子弹所在地板块
+//			int lie=x/40;
+//			int zuobiao;//地板块坐标
+//			if(this.qiangright.node[hang]!=null) {
+//				if(lie==this.qiangright.node[hang].num) {//该行的块坐标与墙在该行的首个块坐标一致，则进入
+//					zuobiao=hang*StaticNum.NUMOFGROUNDX*2+lie;
+//					falist[zuobiao].health-=((Father_Of_ZiDan)falist[i*StaticNum.NUMOFGROUNDX*2+j].ve1.get(k)).damage;//对该块造成伤害
+//					System.out.println("造成伤害，子弹消失   "+lie);
+//					falist[i*StaticNum.NUMOFGROUNDX*2+j].ve1.remove(k);//移除子弹
+//					if(falist[zuobiao].health<=0) {//查看该块上的地方单位是否死亡
+//						this.location[zuobiao]=0;//location标志清0
+//						falist[zuobiao]=null;//单位清除
+//						makeQiang(2,lie,hang,StaticNum.RIGHT);//重建墙
+//					}
+//				}
+//			}
+//		}
+//	}
+	}
+	public static void makeQiang(int judge,int x,int y,int direction) {//0是重建墙，1是增加某个块，2是删除某个块
+		int zuobiao;
+		int m=StaticNum.NUMOFGROUNDX*2-1;//33
+		Node tempnode;
+		Node behindnode;
+		if(judge==0) {//
+			for(int i=0;i<13;i++) {
+				for(int j=16;j>=0;j--) {
+					zuobiao=i*StaticNum.NUMOFGROUNDX*2+j;
+					if(location[zuobiao]==1) {
+						tempnode=new Node();
+						tempnode.num=j;
+						qiangleft.node[i]=tempnode;
+						for(;j>=0;j--) {
+							zuobiao=i*StaticNum.NUMOFGROUNDX*2+j;
+							if(location[zuobiao]==1) {
+								Node newnode=new Node(j);
+								tempnode.nextnode=newnode;
+								tempnode=newnode;
+							}
+						}
+						break;
+					}
+				}
+				for(int j=16;j>=0;j--) {
+					zuobiao=i*StaticNum.NUMOFGROUNDX*2+m-j;
+					if(location[zuobiao]==1) {
+						tempnode=new Node();
+						tempnode.num=m-j;
+						qiangleft.node[i]=tempnode;
+						for(;j>=0;j--) {
+							zuobiao=i*StaticNum.NUMOFGROUNDX+m-j;
+							if(location[zuobiao]==1) {
+								Node newnode=new Node(m-j);
+								tempnode.nextnode=newnode;
+								tempnode=newnode;
+							}
+							break;
+						}
+					}
+				}
+			}
+		}
+		else if(judge==1) {//插入某个块这里当他是最后一个就会出错
+			Node node1=new Node(x);
+			if(direction==StaticNum.LEFT) {
+				System.out.println("units_manager   makeqiang 1");
+				if(qiangleft.node[y]!=null) {
+					tempnode=qiangleft.node[y];
+					behindnode=tempnode;
+					while(tempnode!=null) {
+						if(x>tempnode.num) break;
+						behindnode=tempnode;
+						tempnode=tempnode.nextnode;
+					}
+					if(tempnode==null) { behindnode.nextnode=node1;}
+					else 
+					if(tempnode==qiangleft.node[y]) {
+						node1.nextnode=tempnode;
+						qiangleft.node[y]=node1;
+					}
+					else {
+						behindnode.nextnode=node1;
+						node1.nextnode=tempnode;
+					}
+				}
+				else {
+					qiangleft.node[y]=new Node(x);
+				}
+			}
+			else 
+			{	System.out.println("units_manager makeqiang 1");
+				if(qiangright.node[y]!=null) {
+					tempnode=qiangright.node[y];
+					behindnode=tempnode;
+					while(tempnode!=null) {
+						if(x<tempnode.num) break;
+						behindnode=tempnode;
+						tempnode=tempnode.nextnode;
+					}
+					if(tempnode==null) { behindnode.nextnode=node1;}
+					else 
+					if(tempnode==qiangright.node[y]) {
+						node1.nextnode=tempnode;
+						qiangright.node[y]=node1;
+					}
+					else {
+						behindnode.nextnode=node1;
+						node1.nextnode=tempnode;
+					}
+				}
+				else {
+					qiangright.node[y]=new Node(x);
+				}
+			}
+		}
+		else if(judge==2) {//删除某个块
+			if(direction==StaticNum.LEFT) {
+				tempnode=qiangleft.node[y];
+				behindnode=tempnode;
+				while(true) {
+					if(tempnode.num==x) {
+						if(tempnode==qiangleft.node[y]) {
+							qiangleft.node[y]=tempnode.nextnode;
+						}else {
+							behindnode.nextnode=tempnode.nextnode;
+						}
+						break;
+					}
+					behindnode=tempnode;
+					tempnode=tempnode.nextnode;
+				}
+			}
+			else {
+				tempnode=qiangright.node[y];
+				behindnode=tempnode;
+				while(true) {
+					if(tempnode.num==x) {
+						if(tempnode==qiangright.node[y]) {
+							qiangright.node[y]=tempnode.nextnode;
+						}else {
+							behindnode.nextnode=tempnode.nextnode;
+						}
+						break;
+					}
+					behindnode=tempnode;
+					tempnode=tempnode.nextnode;
+				}
+			}
+		}
+	}
+	@Override
+	public void run() {
+		makeQiang(0,0,0,0);
+		while(true) {
+			try {
+				Thread.sleep(17);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			attackManager();
+		}
+	}
+}
