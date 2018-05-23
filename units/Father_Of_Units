@@ -1,0 +1,110 @@
+package units;
+
+import java.awt.Image;
+import java.util.Vector;
+public class Father_Of_Units{//xs ys speed health img x y direction 
+	int x_of_size=0;
+	int y_of_size=0;
+	int speed=0;
+	int health=99999999;
+	Image img=null;
+	int x=0;
+	int y=0;
+	int direction=0;
+	int isenemy=0;
+	public int getDirection() {
+		return direction;
+	}
+	public void setDirection() {
+		this.direction=direction;
+	}
+	public int getIsenemy() {
+		return this.isenemy;
+	}
+	public void setIsenemy() {
+		this.isenemy=1;
+	}
+	public int getX() {
+		return x;
+	}
+	public void setX(int x) {
+		this.x = x;
+	}
+	public int getY() {
+		return y;
+	}
+	public void setY(int y) {
+		this.y = y;
+	}
+	public int getX_of_size() {//单元速度可变，且生命值
+		return x_of_size;
+	}
+	public void setX_of_size(int x_of_size) {
+		this.x_of_size = x_of_size;
+	}
+	public int getY_of_size() {
+		return y_of_size;
+	}
+	public void setY_of_size(int y_of_size) {
+		this.y_of_size = y_of_size;
+	}
+	public int getSpeed() {
+		return speed;
+	}
+	public void setSpeed(int speed) {
+		this.speed = speed;
+	}
+	public Image getImg() {
+		return img;
+	}
+	public void setImg(Image img) {
+		this.img = img;
+	}
+	public void setHealth(int health) {
+		this.health=health;
+	}
+	public int getHealth() {
+		return health;
+	}
+	/*三个构造方法，无参构造方法，无图像构造方法，有图像构造方法*/
+	public Father_Of_Units() {
+	}
+	
+	public Father_Of_Units(
+			int x,
+			int y,
+			int x_of_size,
+			int y_of_size,
+			int speed,
+			int health,
+			int direction) {
+		this.x=x;
+		this.y=y;
+		this.x_of_size=x_of_size;
+		this.y_of_size=y_of_size;
+		this.speed=speed;
+		this.health=health;
+		this.direction=direction;
+	}
+	
+	//下面是备用的构造方法
+	public Father_Of_Units(
+			int x,
+			int y,
+			int x_of_size,
+			int y_of_size,
+			int speed,
+			int health,
+			int direction,
+			Image image) {
+		this.x=x;
+		this.y=y;
+		this.x_of_size=x_of_size;
+		this.y_of_size=y_of_size;
+		this.speed=speed;
+		this.health=health;
+		this.direction=direction;
+		this.img=image;
+	}
+
+}
